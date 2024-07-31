@@ -17,7 +17,7 @@ public class BookRepository {
 
     public BookRepository() {
         IntStream.range(0, 10).forEach(i -> books.add(Book.builder()
-                .id(String.valueOf(String.valueOf(i)))
+                .id(String.valueOf(i))
                 .isbn("ISBN" + i)
                 .title("TITLE" + i)
                 .description("DESC" + i)
@@ -27,6 +27,7 @@ public class BookRepository {
     }
 
     public Book save(Book book) {
+        books.add(book);
         return book;
     }
 

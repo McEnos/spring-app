@@ -1,4 +1,4 @@
-package com.example.springapp.conrollers;
+package com.example.springapp.controllers;
 
 import com.example.springapp.models.Book;
 import com.example.springapp.service.BookService;
