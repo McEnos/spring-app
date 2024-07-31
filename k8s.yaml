@@ -32,4 +32,4 @@ spec:
           image: joshuaenos/spring-boot-k8s
           ports:
             - containerPort: 8080
-          imagePullPolicy: Always #the kubelet does not try fetching the image. If the image is somehow already present locally, the kubelet attempts to start the container; otherwise, startup fails.
+          imagePullPolicy: Always #the kubelet does not try if it is set to Never fetching the image. If the image is somehow already present locally, the kubelet attempts to start the container; otherwise, startup fails.
