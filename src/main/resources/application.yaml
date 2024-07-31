@@ -1,5 +1,6 @@
 #spring.application.name=spring-app
 #server.port=9000
+#https://boottechnologies-ci.medium.com/lab2-spring-boot-k8s-kubernetes-health-probes-with-spring-boot-07f06a28433d
 spring:
   application:
     name: spring-app
