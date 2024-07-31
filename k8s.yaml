@@ -33,3 +33,19 @@ spec:
           ports:
             - containerPort: 8080
           imagePullPolicy: Always #the kubelet does not try if it is set to Never fetching the image. If the image is somehow already present locally, the kubelet attempts to start the container; otherwise, startup fails.
+          livenessProbe:
+            httpGet:
+              port: 9000
+              path: /actuator/health/liveness
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 1
+          readinessProbe:
+            httpGet:
+              port: 9000
+              path: /actuator/health/readiness
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 1
