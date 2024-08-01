@@ -7,6 +7,7 @@ data:
   host: "192.168.10.1"
   debug_mode: "1"
   database: "demodb"
+  profile: "stage"
 ---
 
 apiVersion: v1 # Kubernetes API version
@@ -48,29 +49,26 @@ spec:
             httpGet:
               port: 9000
               path: /actuator/health/liveness
-            initialDelaySeconds: 15
-            periodSeconds: 5
-            timeoutSeconds: 2
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
             failureThreshold: 1
           readinessProbe:
             httpGet:
               port: 9000
               path: /actuator/health/readiness
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            timeoutSeconds: 2
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
             failureThreshold: 1
             #envFrom:
             #- configMapRef:
             #    name: db-config #refers to a configMap by its name
-          env: #array of environment variable definitions
-            - name: host
-              valueFrom: #select individual keys in a configMap
-                configMapKeyRef:
-                  key: host
-                  name: db-config #refers to a configMap by its name
-            - name: database
+          args: ["--spring.profiles.active=$(APP_PROFILE)"]
+          env:
+            - name: APP_PROFILE
               valueFrom:
                 configMapKeyRef:
-                  key: database
+                  key: profile
                   name: db-config
+
