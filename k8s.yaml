@@ -8,6 +8,10 @@ data:
   debug_mode: "1"
   database: "demodb"
   profile: "stage"
+  app.properties: |
+    server.port=9000
+    api.key=uolfbghndkks
+
 ---
 
 apiVersion: v1 # Kubernetes API version
@@ -65,10 +69,17 @@ spec:
             #- configMapRef:
             #    name: db-config #refers to a configMap by its name
           args: ["--spring.profiles.active=$(APP_PROFILE)"]
-          env:
-            - name: APP_PROFILE
-              valueFrom:
-                configMapKeyRef:
-                  key: profile
-                  name: db-config
+          #env:
+            #- name: APP_PROFILE
+            #  valueFrom:
+            #    configMapKeyRef:
+              #    key: profile
+               #   name: db-config
+          volumeMounts:
+            - mountPath: /etc/db/
+              name: config-volume
+      volumes:
+        - name: config-volume
+          configMap:
+            name: db-config
 
