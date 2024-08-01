@@ -4,6 +4,9 @@
 spring:
   application:
     name: spring-app
+  data:
+    mongodb:
+      uri: mongodb+srv://${MONGODB_LOGIN}:${MONGODB_PWD}@${MONGODB_URL}/${MONGODB_DATABASE}?${MONGODB_OPTS}
 server:
   port: 9000
 management:

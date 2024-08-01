@@ -5,59 +5,70 @@ import com.example.springapp.repositories.BookRepository;
 import com.example.springapp.service.BookService;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Service Implementation for managing {@link Book}.
+ */
 @Service
 public class BookServiceImpl implements BookService {
-    private final BookRepository bookRepository;
 
-    public BookServiceImpl(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
+
+    private final BookRepository repository;
+
+    public BookServiceImpl(BookRepository repo) {
+        this.repository = repo;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Book create(Book book) {
-        try {
-            return bookRepository.save(book);
-
-        } catch (Exception ex) {
-            return null;
-        }
+        return repository.save(book);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Book update(Book book) {
-        try {
-            return bookRepository.update(book);
-
-        } catch (Exception ex) {
-            return null;
+        Book existingBook = repository.findById(book.getId()).orElse(null);
+        if (Objects.isNull(existingBook)) {
+            throw new RuntimeException("Book Id is not found");
         }
+        existingBook.setDescription(book.getDescription());
+        existingBook.setIsbn(book.getIsbn());
+        existingBook.setPage(book.getPage());
+        existingBook.setTitle(book.getTitle());
+        existingBook.setPrice(book.getPrice());
+        return repository.save(existingBook);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Book getOne(String id) {
-        try {
-            return bookRepository.findById(id).orElse(null);
-
-        } catch (Exception ex) {
-            return null;
-        }
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Book Id is not found"));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Book> getAll() {
-        try {
-            return bookRepository.findAll();
-
-        } catch (Exception ex) {
-            return Collections.emptyList();
-        }
+        return repository.findAll();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void delete(String id) {
-        bookRepository.deleteById(id);
+        repository.deleteById(id);
     }
+
 }

@@ -1,42 +1,45 @@
 package com.example.springapp.service;
 
-import com.example.springapp.models.Book;
+import com.example.springapp.models.Author;
 
 import java.util.List;
 
-public interface BookService {
+/**
+ * Service Interface for managing {@link Author}.
+ *  @author @bootteam
+ */
+public interface AuthorService  {
 
     /**
      * create new item for domain
      *
      * @param entity entity to save.
-     * @return persisted entity Book
+     * @return persisted entity Author
      */
-    Book create(Book entity);
+    Author create(Author entity);
 
     /**
      * Update entity. Check before if existing data. If data is empty throw Exception
      *
      * @param entity domain
-     * @return Book
+     * @return Author
      */
-    Book update(Book entity);
+    Author update(Author entity);
 
     /**
-     * get Book by id. Can be return empty
+     * get Author by id. Can be return empty
      *
      * @param id the id of the entity.
-     * @return Book
+     * @return Author
      */
-    Book getOne(String id) ;
+    Author getOne(String id) ;
 
     /**
      * Get all entities
      *
-     * @return list of entities List<Book>
+     * @return list of entities List<Author>
      */
-    List<Book> getAll();
-
+    List<Author> getAll();
 
     /**
      * Delete record by id

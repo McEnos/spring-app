@@ -13,6 +13,24 @@ data:
     api.key=uolfbghndkks
 immutable: true
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-config
+data:
+  host: "cluster0.xpkhnmq.mongodb.net"
+  database: "library_db"
+  option: "retryWrites=true&w=majority"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongodb-secret
+type: Opaque
+data:
+  username: ZGJ1c2VybmFtZQ==
+  password: ZGJ1cGFzc3dvcmQ=
+---
 
 apiVersion: v1 # Kubernetes API version
 kind: Service # Kubernetes resource kind
@@ -65,16 +83,42 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 1
-            #envFrom:
-            #- configMapRef:
-            #    name: db-config #refers to a configMap by its name
-          args: ["--spring.profiles.active=$(APP_PROFILE)"]
-          #env:
-            #- name: APP_PROFILE
-            #  valueFrom:
-            #    configMapKeyRef:
+              #envFrom:
+              #- configMapRef:
+              #    name: db-config #refers to a configMap by its name
+              #args: ["--spring.profiles.active=$(APP_PROFILE)"]
+              #env:
+              #- name: APP_PROFILE
+              #  valueFrom:
+              #    configMapKeyRef:
               #    key: profile
-               #   name: db-config
+            #   name: db-config
+          env:
+            - name: MONGO_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: host
+                  name: mongodb-config
+            - name: MONGODB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  key: database
+                  name: mongodb-config
+            - name: MONGO_OPTS
+              valueFrom:
+                configMapKeyRef:
+                  key: option
+                  name: mongodb-config
+            - name: MONGODB_LOGIN
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: mongodb-secret
+            - name: MONGO_PWD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: mongodb-secret
           volumeMounts:
             - mountPath: /etc/db/
               name: config-volume

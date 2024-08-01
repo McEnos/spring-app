@@ -1,0 +1,70 @@
+package com.example.springapp.service.impl;
+
+
+import com.example.springapp.models.Author;
+import com.example.springapp.repositories.AuthorRepository;
+import com.example.springapp.service.AuthorService;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+/**
+ * {@inheritDoc}
+ */
+@Service
+public class AuthorServiceImpl implements AuthorService {
+
+    private final AuthorRepository repository;
+
+    public AuthorServiceImpl(AuthorRepository repo) {
+        this.repository = repo;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Author create(Author author) {
+        return repository.save(author);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Author update(Author author) {
+        Author existingAuthor = repository.findById(author.getId()).orElse(null);
+        if (Objects.isNull(existingAuthor)) {
+            throw new RuntimeException("Author Id is not found");
+        }
+        existingAuthor.setFirstname(author.getFirstname());
+        existingAuthor.setLastname(author.getLastname());
+
+        return repository.save(existingAuthor);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Author getOne(String id) {
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Author Id is not found"));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Author> getAll() {
+        return repository.findAll();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void delete(String id) {
+        repository.deleteById(id);
+    }
+
+}
