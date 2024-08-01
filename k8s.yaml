@@ -4,14 +4,14 @@ metadata:
   name: db-config
 data:
   # property-like keys; each key maps to a simple value
-  host: "192.168.10.1"
+  ip: "192.168.10.1"
   debug_mode: "1"
   database: "demodb"
   profile: "stage"
   app.properties: |
     server.port=9000
     api.key=uolfbghndkks
-
+immutable: true
 ---
 
 apiVersion: v1 # Kubernetes API version
