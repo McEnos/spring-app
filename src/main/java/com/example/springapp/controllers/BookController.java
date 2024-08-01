@@ -11,9 +11,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST controller for managing {@link Book}.
+ */
 @RestController
 @RequestMapping("/api/book")
 public class BookController {
+
     private final Logger log = LoggerFactory.getLogger(BookController.class);
 
     private final BookService entityService;
@@ -59,7 +63,8 @@ public class BookController {
     public ResponseEntity<List<Book>> getAllBook() {
         log.debug("REST request to get all books");
         List<Book> lst = entityService.getAll();
-        return new ResponseEntity<>(lst, HttpStatus.OK);
+
+        return new ResponseEntity<>(lst,HttpStatus.OK);
     }
 
     /**
@@ -72,6 +77,7 @@ public class BookController {
     public ResponseEntity<Book> getOneBook(@PathVariable("id") String id) {
         log.debug("REST request to get Book : {}", id);
         Book e = entityService.getOne(id);
+
         return new ResponseEntity<>(e, HttpStatus.OK);
     }
 
@@ -87,4 +93,5 @@ public class BookController {
         entityService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 }
