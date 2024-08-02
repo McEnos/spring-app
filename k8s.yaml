@@ -63,6 +63,13 @@ spec:
     spec:
       containers:
         - name: book-api #container name
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "128Mi"
+            limits:
+              cpu: "1"
+              memory: "256Mi"
           image: joshuaenos/spring-boot-k8s
           ports:
             - containerPort: 8080
