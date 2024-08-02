@@ -1,15 +1,12 @@
 package com.example.springapp.controllers;
 
 import com.example.springapp.models.Book;
-import com.example.springapp.service.BookService;
-import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.example.springapp.repositories.BookRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * REST controller for managing {@link Book}.
@@ -18,80 +15,55 @@ import java.util.List;
 @RequestMapping("/api/book")
 public class BookController {
 
-    private final Logger log = LoggerFactory.getLogger(BookController.class);
+    private final BookRepository bookRepository;
 
-    private final BookService entityService;
-
-    public BookController(BookService entityService) {
-        this.entityService = entityService;
+    public BookController(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
-    /**
-     * {@code POST  /book} : Create a new book.
-     *
-     * @param book the book to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new book.
-     */
-    @PostMapping()
-    public ResponseEntity<Book> createBook(@RequestBody @Valid Book book) {
-        log.debug("REST request to save Book : {}", book);
-        return new ResponseEntity<>(entityService.create(book), HttpStatus.CREATED);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<Book> createBook(@RequestBody Book book) {
+        return bookRepository.save(book);
     }
 
-    /**
-     * {@code PUT  /book} : Updates an existing book.
-     *
-     * @param book the book to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated book,
-     * or with status {@code 400 (Bad Request)} if the book is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the book couldn't be updated.
-     */
-    @PutMapping()
-    public ResponseEntity<Book> updateBook(@Valid @RequestBody Book book) {
-        log.debug("REST request to update Book : {}", book);
-        Book result = entityService.update(book);
-        return ResponseEntity.ok().body(result);
+    @GetMapping
+    public Flux<Book> getBooks() {
+        return bookRepository.findAll();
     }
 
-    /**
-     * {@code GET  /book} : get all the books.
-     *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of book in body.
-     */
 
-    @GetMapping()
-    public ResponseEntity<List<Book>> getAllBook() {
-        log.debug("REST request to get all books");
-        List<Book> lst = entityService.getAll();
-
-        return new ResponseEntity<>(lst,HttpStatus.OK);
+    @GetMapping("/{bookId}")
+    public Mono<ResponseEntity<Book>> getBookById(@PathVariable long bookId){
+        return bookRepository.findById(bookId)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    /**
-     * {@code GET  /book/:id} : get the "id" book.
-     *
-     * @param id the id of the book to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the book, or with status {@code 404 (Not Found)}.
-     */
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<Book> getOneBook(@PathVariable("id") String id) {
-        log.debug("REST request to get Book : {}", id);
-        Book e = entityService.getOne(id);
-
-        return new ResponseEntity<>(e, HttpStatus.OK);
+    @PutMapping("{bookId}")
+    public Mono<ResponseEntity<Book>> updateBook(@PathVariable long bookId, @RequestBody Mono<Book> bookMono){
+        return bookRepository.findById(bookId)
+                .flatMap(book -> bookMono.map(u -> {
+                    book.setDescription(u.getDescription());
+                    book.setPrice(u.getPrice());
+                    book.setIsbn(u.getIsbn());
+                    book.setPrice(u.getPrice());
+                    book.setPage(u.getPage());
+                    return book;
+                }))
+                .flatMap(bookRepository::save)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    /**
-     * {@code DELETE  /book/:id} : delete the "id" book.
-     *
-     * @param id the id of the book to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable("id") String id) {
-        log.debug("REST request to delete Book : {}", id);
-        entityService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("/{bookId}")
+    public Mono<ResponseEntity<Void>> deleteBook(@PathVariable long bookId) {
+        return bookRepository.findById(bookId)
+                .flatMap(s ->
+                        bookRepository.delete(s)
+                                .then(Mono.just(new ResponseEntity<Void>(HttpStatus.OK)))
+                )
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 }

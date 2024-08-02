@@ -1,14 +1,14 @@
-#spring.application.name=spring-app
-#server.port=9000
-#https://boottechnologies-ci.medium.com/lab2-spring-boot-k8s-kubernetes-health-probes-with-spring-boot-07f06a28433d
 spring:
   application:
-    name: spring-app
-  data:
-    mongodb:
-      uri: mongodb+srv://${MONGODB_LOGIN}:${MONGODB_PWD}@${MONGODB_URL}/${MONGODB_DATABASE}
-server:
-  port: 9000
+    name: spring-data-r2dbc
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username:  ${DB_USERNAME}
+    password: ${DB_PWD}
+    repositories:
+      enabled: true
+
+
 management:
   endpoint:
     health:
@@ -17,17 +17,11 @@ management:
       probes:
         enabled: true
   health:
-    livenessstate:
+    livenessState:
       enabled: true
-    readinessstate:
+    readinessState:
       enabled: true
   endpoints:
     web:
       exposure:
-        include: [ 'env','health','info' ]
-
-application:
-  env:
-    db-host: ${host:N/A}
-    db-name: ${database:N/A}
-    debug: ${debug_mode:0}
+        include: ['env', 'health', 'info']

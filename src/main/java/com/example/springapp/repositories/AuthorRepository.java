@@ -1,7 +1,10 @@
 package com.example.springapp.repositories;
 
 import com.example.springapp.models.Author;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface AuthorRepository extends MongoRepository<Author,String> {
+
+@Repository
+public interface AuthorRepository extends ReactiveCrudRepository<Author, Long> {
 }

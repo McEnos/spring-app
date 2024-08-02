@@ -1,23 +1,24 @@
 package com.example.springapp.models;
 
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Builder
+@Table
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document
 public class Author {
 
     @Id
-    private String id;
+    private Long id;
 
+    @NotBlank
     private String lastname;
 
     private String firstname;
+
 }
